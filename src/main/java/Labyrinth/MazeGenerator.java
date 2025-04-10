@@ -76,7 +76,7 @@ public class MazeGenerator {
     }
 
     public static void main(String[] args) {
-        MazeGenerator mazeGenerator = new MazeGenerator(10, 10);
+        MazeGenerator mazeGenerator = new MazeGenerator(20, 50);
         mazeGenerator.printMaze();
     }
 }

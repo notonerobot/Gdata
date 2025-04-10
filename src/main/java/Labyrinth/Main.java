@@ -10,38 +10,35 @@ public class Main {
     public static final String ANSI_WHITE = "\u001B[37m";
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String WHITE_BACKGROUND = "\033[47m";  // WHITE
+    public static final String BLUE_BACKGROUND = "\033[44m";
+    public static final String BLACK_BACKGROUND = "\033[40m";   // BLACK
+    public static final String WHITE_BACKGROUND_BRIGHT = "\033[0;107m";
+    public static final String GREEN_BACKGROUND = "\033[42m";
+
+
 
 
 
     public static void main(String[] args){
 
-        int sizex = 10;
-        int sizey = 10;
+        int sizex = 20;
+        int sizey = 50;
         int maxstep = 200000;
-        String avatar = ANSI_GREEN + "LoM" + ANSI_RESET;
-        String wall = WHITE_BACKGROUND + "   " + ANSI_RESET;
-        String space = ANSI_WHITE + "   " + ANSI_RESET;
-        String exit =ANSI_GREEN + " []" + ANSI_RESET;
+        String wall = BLACK_BACKGROUND + "   " + ANSI_RESET;
+        String avatar = BLUE_BACKGROUND + ANSI_WHITE + "LoM" + ANSI_RESET;
+        String space = WHITE_BACKGROUND_BRIGHT + "   " + ANSI_RESET;
+        String exit =WHITE_BACKGROUND_BRIGHT + ANSI_GREEN + " []" + ANSI_RESET;
 
 
         Scanner scanner = new Scanner(System.in);
-        String[][] arr = new String[sizex][sizey];
+        String[][] Maze = new String[sizex][sizey];
         Random random = new Random();
-        Random rando = new Random();
 
-        for(String[] r : arr) {
-            int rand = 0;
-            //System.out.println(rand);
+        for(String[] r : Maze) {
             for (int n = 0; n < sizex; n++) {
                 for (int m = 0; m < sizey; m++) {
-                    /*rand = rando.nextInt(0,2);
-                    if (rand == 1) {
-                        arr[n][m] = wall;
-                    } else {
-                        arr[n][m] = space;
-                    }*/
-                    arr[n][m] = wall;
-                    //sSystem.out.println(rand);
+                    Maze[n][m] = wall;
+
                 }
             }
         }
@@ -49,63 +46,55 @@ public class Main {
         int algoy = random.nextInt(sizey);
 
         //genarate path
-        for (int i = 0; i < 50; i++) {
-            arr[algox][algoy] = space;
+        for (int i = 0; i < 1000; i++) {
+            Maze[algox][algoy] = space;
             int dirAl = random.nextInt(0, 4);
             switch (dirAl) {
                 case 0 -> algox++;
                 case 1 -> algox--;
                 case 2 -> algoy++;
                 case 3 -> algoy--;
-                default -> System.out.println("Geht nicht");
+                default -> System.out.println("unknown random");
             }
-            if (algoy < 0){
-                System.out.println("das geht nicht");
-                algoy++;
-            } else if (algoy > (sizey-1)) {
-                System.out.println("das geht nicht");
-                algoy--;
-            } else if (algox < 0){
-                System.out.println("das geht nicht");
-                algox++;
-            } else if (algox > (sizex-1)) {
-                System.out.println("das geht nicht");
-                algox--;
+            if (algoy < 1){
+                System.out.println("out of bounds genaration");
+                algox =algox+2;
+            } else if (algoy > (sizey-2)) {
+                System.out.println("out of bounds genaration");
+                algoy = algoy-2;
+            } else if (algox < 1){
+                System.out.println("out of bounds genaration");
+                algox = algox+2;
+            } else if (algox > (sizex-2)) {
+                System.out.println("out of bounds genaration");
+                algox = algox-2;
             }
-            arr[algox][algoy] = space;
+            Maze[algox][algoy] = space;
         }
-
-        /*
-        for (int o = 0; o < sizex; o++) {
-            for (int u = 0; u < sizey; u++) {
-
-            }
-
-        }
-        */
-
-
-
-
 
         int posx = random.nextInt(sizex);
         int posy = random.nextInt(sizey);
-        arr[posx][posy] = avatar;
+
+        while (Maze[posx][posy] == wall){
+            posx = random.nextInt(sizex);
+            posy = random.nextInt(sizey);
+        }
+        Maze[posx][posy] = avatar;
 
         int exx = random.nextInt(sizex);
         int exy = random.nextInt(sizey);
 
-        while (exx == posx && exy == posy) {
-            System.out.println("war auf PL");
+        while (exx == posx && exy == posy||Maze[exx][exy] == wall) {
+            System.out.println("invalid positoned");
             exx = random.nextInt( sizex);
             exy = random.nextInt( sizey);
         }
-        arr[exx][exy]=exit;
+        Maze[exx][exy]=exit;
 
 
         for (int i = 0; i < sizex; i++) {
             for (int j = 0; j < sizey; j++)
-                System.out.print(arr[i][j]);
+                System.out.print(Maze[i][j]);
             System.out.println();
         } //ersteinmahl das spielfeld anzeigen
 
@@ -118,61 +107,62 @@ public class Main {
             String direct = scanner.nextLine();
             maxstep--;
 
-            arr[posx][posy] = space; // empty prior "room"
+            Maze[posx][posy] = BLUE_BACKGROUND + "   " + ANSI_RESET; // empty prior "room"
 
             switch (direct) {
-                case "S", "s" -> posx++;
-                case "A", "a" -> posy--;
-                case "W", "w" -> posx--;
-                case "D", "d" -> posy++;
-                case null, default -> System.out.println("Geht nicht");
+                case "W", "w": posx--; avatar = BLUE_BACKGROUND + ANSI_WHITE + " ^ " + ANSI_RESET; break;
+                case "A", "a": posy--; avatar = BLUE_BACKGROUND + ANSI_WHITE + " < " + ANSI_RESET; break;
+                case "S", "s": posx++; avatar = BLUE_BACKGROUND + ANSI_WHITE + " v " + ANSI_RESET; break;
+                case "D", "d": posy++; avatar = BLUE_BACKGROUND + ANSI_WHITE + " > " + ANSI_RESET; break;
+                case null, default: System.out.println("unknown input");
             }
             if (posy < 0){
-                System.out.println("das geht nicht");
+                System.out.println("out of bounds player");
                 posy++;
             } else if (posy > (sizey-1)) {
-                System.out.println("das geht nicht");
+                System.out.println("out of bounds player");
                 posy--;
             } else if (posx < 0){
-                System.out.println("das geht nicht");
+                System.out.println("out of bounds player");
                 posx++;
             } else if (posx > (sizex-1)) {
-                System.out.println("das geht nicht");
+                System.out.println("out of bounds player");
                 posx--;
             }
 
             //Hier die wand colision überprüfen
-            if(arr[posx][posy] == wall){
+            if(Maze[posx][posy] == wall){
                 System.out.println("das ne' wand");
                 switch (direct){
-                    case "S", "s" -> posx--;
-                    case "A", "a" -> posy++;
                     case "W", "w" -> posx++;
+                    case "A", "a" -> posy++;
+                    case "S", "s" -> posx--;
                     case "D", "d" -> posy--;
-                    case null, default -> System.out.println("Geht nicht");
+                    case null, default -> System.out.println("unknown input");
                 }
             }
 
 
             //position setzen
-            arr[posx][posy] = avatar;
+            Maze[posx][posy] = avatar;
 
             //spielfeld ausgeben
 
-            if(arr[exx][exy] != avatar) {
+            if(Maze[exx][exy] != avatar) {
                 // Printing the Array
                 for (int i = 0; i < sizex; i++) {
                     for (int j = 0; j < sizey; j++)
-                        System.out.print(arr[i][j]);
+                        System.out.print(Maze[i][j]);
                     System.out.println();
                 }
                 System.out.println(maxstep);
             } else {
                 finished  = true;
                 // Printing the Array a last time
+
                 for (int i = 0; i < sizex; i++) {
                     for (int j = 0; j < sizey; j++)
-                        System.out.print(arr[i][j]);
+                        System.out.print(Maze[i][j]);
                     System.out.println();
                 }
                 System.out.println("Game Won!");
@@ -180,7 +170,7 @@ public class Main {
 
             if(maxstep==0) {
                 finished = true;
-                if(arr[exx][exy] != avatar) {
+                if(Maze[exx][exy] != avatar) {
                     System.out.println("Game Over");
                 }
             }

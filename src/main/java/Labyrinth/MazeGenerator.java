@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.Stack;
 
 public class MazeGenerator {
+    public static final String WHITE_BACKGROUND_BRIGHT = "\033[0;107m";
+    public static final String BLACK_BACKGROUND = "\033[40m";   // BLACK
+    public static final String ANSI_RESET = "\u001B[0m";
     private final int rows;
     private final int cols;
     private final int[][] maze;
@@ -69,7 +72,7 @@ public class MazeGenerator {
     public void printMaze() {
         for (int[] row : maze) {
             for (int cell : row) {
-                System.out.print(cell == 1 ? "   " : "[#]");
+                System.out.print(cell == 1 ? WHITE_BACKGROUND_BRIGHT + "   " + ANSI_RESET : BLACK_BACKGROUND + "   " + ANSI_RESET);
             }
             System.out.println();
         }

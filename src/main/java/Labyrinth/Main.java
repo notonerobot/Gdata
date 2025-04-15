@@ -1,3 +1,4 @@
+//TestTestTest
 package Labyrinth;
 import java.util.*;
 
@@ -14,14 +15,16 @@ public class Main {
     public static final String BLACK_BOLD = "\033[1;30m";  // BLACK
     public static final String GREEN_BACKGROUND_BRIGHT = "\033[0;102m";// GREEN
     public static final String RED_BOLD = "\033[1;31m";    // RED
-    public static final String RED_BACKGROUND = "\033[41m";    // RED
+    public static final String RED_BACKGROUND = "\u001B[41m";    // RED
+    public static final String RED_BACKGROUND_BRIGHT = "\033[0;101m";// RED
 
 
     private static final Random random = new Random();
-    private static final int sizex = 31; //nur ungerade zahlen
-    private static final int sizey = 61; //nur ungerade zahlen
+    private static final int sizex = 11; //nur ungerade zahlen (opt31)
+    private static final int sizey = 11; //nur ungerade zahlen (opt61)
     private static final String WALL = BLACK_BACKGROUND + "   " + ANSI_RESET;
     private static final String PATH = GREEN_BACKGROUND + "   " + ANSI_RESET;
+
 
 /*
     private final int sizex;
@@ -163,10 +166,9 @@ private static void initializeMaze(String[][] maze) {
 //        String[][] Maze = new String[sizex][sizey];
 
         //MazeGeneratortest mazeGenerator = new MazeGeneratortest(Maze, sizex, sizey);
-
         String avatar = GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + "LoM" + ANSI_RESET;
-        String exit =GREEN_BACKGROUND + BLACK_BOLD + " []" + ANSI_RESET;
-        String enemy = RED_BACKGROUND + BLACK_BOLD + "-_-" + ANSI_RESET;
+        String exit =GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + " []" + ANSI_RESET;
+        String enemy = RED_BACKGROUND + BLACK_BOLD + "x-x" + ANSI_RESET;
         String preimput = null;
         //new MazeGenerator(sizex,sizey);
         Scanner scanner = new Scanner(System.in);
@@ -209,28 +211,37 @@ private static void initializeMaze(String[][] maze) {
 //            Maze[algox][algoy] = PATH;
 //        }
 
-        int posx = random.nextInt(sizex);
+        int posx = random.nextInt(sizex); //player coordanates
         int posy = random.nextInt(sizey);
 
-        while (maze[posx][posy] == WALL){
-            posx = random.nextInt(sizex);
-            posy = random.nextInt(sizey);
-        }
-        maze[posx][posy] = avatar;
+        int enx = random.nextInt(sizex); //enemy coordinates
+        int eny = random.nextInt(sizey);
 
         int exx = random.nextInt(sizex); // exit coordinates
         int exy = random.nextInt(sizey);
 
-        int enx = random.nextInt(sizex); //enemy coordinates
-        int eny = random.nextInt(sizey);
-        maze[enx][eny] = enemy;
-
-        while (exx == posx && exy == posy||maze[exx][exy] == WALL) {
+        while (maze[posx][posy] == WALL){
+            posx = random.nextInt(sizex);
+            posy = random.nextInt(sizey);
+        } // Player in wall reset
+        while (maze[exx][exy] == WALL) {
             System.out.println("invalid positoned");
             exx = random.nextInt( sizex);
             exy = random.nextInt( sizey);
-        }
-        maze[exx][exy]=exit;
+        } //exit in wall reset
+        while (maze[enx][eny] == WALL){
+            enx = random.nextInt(sizex);
+            eny = random.nextInt(sizey);
+        } // enemy in wall reset
+        while (exx == posx && exy == posy){
+            exx = random.nextInt( sizex);
+            exy = random.nextInt( sizey);
+        } // exit and player same position reset
+
+
+        maze[enx][eny] = enemy; //place enemy
+        maze[posx][posy] = avatar; //place player
+        maze[exx][exy]=exit; //place exit
 
 
         for (int i = 0; i < sizex; i++) {
@@ -244,6 +255,7 @@ private static void initializeMaze(String[][] maze) {
 
         boolean finished = false;
         while(!finished) {
+
             //Bewegen
             System.out.println("  W");
             System.out.println("A S D");
@@ -261,7 +273,7 @@ private static void initializeMaze(String[][] maze) {
                     case "A", "a": posy--; avatar = GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + " < " + ANSI_RESET; break;
                     case "S", "s": posx++; avatar = GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + " v " + ANSI_RESET; break;
                     case "D", "d": posy++; avatar = GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + " > " + ANSI_RESET; break;
-                    case null, default: System.out.println( preimput+ " is an unknown input");
+                    case null, default: System.out.println( preimput+ " is an unknown input player");
                 }
             }
 
@@ -281,7 +293,7 @@ private static void initializeMaze(String[][] maze) {
 
             //Hier die wand colision überprüfen
             if(maze[posx][posy] == WALL){
-                System.out.println("das ne' wand");
+                System.out.println("das ne' wand player");
                 switch (direct){
                     case "W", "w": posx++; break;
                     case "A", "a": posy++; break;
@@ -292,14 +304,57 @@ private static void initializeMaze(String[][] maze) {
                         case "A", "a": posy++; avatar = GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + " < " + ANSI_RESET; break;
                         case "S", "s": posx--; avatar = GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + " v " + ANSI_RESET; break;
                         case "D", "d": posy--; avatar = GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + " > " + ANSI_RESET; break;
-                        case null, default: System.out.println( preimput+ " is an unknown input");
+                        case null, default: System.out.println( preimput+ " is an unknown input player");
                     }
                 }
             }
 
-
             //position setzen
             maze[posx][posy] = avatar;
+
+            //enemy movement
+            maze[enx][eny] = PATH; // empty prior "room"
+
+
+
+            int enmove;
+            boolean works = false;
+            if(posx>enx){
+                enmove = 2;
+            } else if (posx<enx){
+                enmove = 0;
+            } else if (posy>eny) {
+                enmove = 3;
+            } else if (posy<eny) {
+                enmove = 1;
+            } else {
+                enmove = random.nextInt(4);
+            }
+
+            while(!works) {
+                switch (enmove) {
+                    case 0 -> enx--;
+                    case 1 -> eny--;
+                    case 2 -> enx++;
+                    case 3 -> eny++;
+                    default -> System.out.println("Mein fehler enemy");
+                }
+
+                if (maze[enx][eny] == WALL) {
+                    System.out.println("das ne' wand enemy");
+                    switch (enmove) {
+                        case 0 -> enx++;
+                        case 1 -> eny++;
+                        case 2 -> enx--;
+                        case 3 -> eny--;
+                        default -> System.out.println("Mein fehler enemy");
+                    }
+                    enmove = random.nextInt(4);
+                } else {
+                    works = true;
+                }
+            }
+            maze[enx][eny] = enemy;
 
             //spielfeld ausgeben
 

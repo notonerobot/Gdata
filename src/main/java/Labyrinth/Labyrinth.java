@@ -2,7 +2,7 @@ package Labyrinth;//TestTestTest
 
 import java.sql.SQLOutput;
 import java.util.*;
-public class LabyrinthGame {
+public class Labyrinth {
     public static final String GREEN_BACKGROUND = "\033[42m";
 
     public static final String BLACK_BACKGROUND = "\033[40m";   // BLACK
@@ -17,6 +17,10 @@ public class LabyrinthGame {
     private static final String WALL = BLACK_BACKGROUND + "   " + ANSI_RESET;
     private static final String PATH = GREEN_BACKGROUND + "   " + ANSI_RESET;
     private static String avatar = GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + "LoM" + ANSI_RESET;
+    public static String preimput;
+    public static int posx;
+    public static int posy;
+    public static int maxstep = 20;
     Point start = new Point(2, 2, null);
     Point finish = new Point(4, 3, null);
 
@@ -93,10 +97,8 @@ public class LabyrinthGame {
         }
     }
 
-    public static String PlMovement(String[][] maze, int posx, int posy, int maxstep, String preimput){
+    public static void PlMovement(String[][] maze){
         Scanner scanner = new Scanner(System.in);
-
-        int preposx = posx;
 
         //Bewegen
         System.out.println("  W");
@@ -203,62 +205,15 @@ public class LabyrinthGame {
                     }
             }
         }
-        return maze[posx][posy];
+        maze[posx][posy]=avatar;
     }
 
-/*
-    private static List<Point> constructPath(Point finish) {
-        List<Point> path = new ArrayList<>();
-        for (Point p = finish; p != null; p = p.parent) {
-            path.add(p);
-        }
-        Collections.reverse(path);
-        return path;
-    }
 
-    private static boolean isValidMove(String[][] grid, int x, int y, boolean[][] visited) {
-        return x >= 0 && y >= 0 && x < grid.length && y < grid[0].length &&
-                !grid[x][y].equals("#") && !visited[x][y];
-    }
-
-    public static List<Point> findPath(String[][] grid, Point start, Point finish) {
-        int rows = grid.length;
-        int cols = grid[0].length;
-        boolean[][] visited = new boolean[rows][cols];
-        Queue<Point> queue = new LinkedList<>();
-        queue.add(start);
-        visited[start.x][start.y] = true;
-
-        int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
-
-        while (!queue.isEmpty()) {
-            Point current = queue.poll();
-
-            if (current.x == finish.x && current.y == finish.y) {
-                return constructPath(current);
-            }
-
-            for (int[] direction : directions) {
-                int newX = current.x + direction[0];
-                int newY = current.y + direction[1];
-
-                if (isValidMove(grid, newX, newY, visited)) {
-                    queue.add(new Point(newX, newY, current));
-                    visited[newX][newY] = true;
-                }
-            }
-        }
-        return null;
-    }
-*/
 public static void main(String[] args) {
 
     String[][] maze = new String[sizex][sizey];
     initializeMaze(maze);
     generateMaze(maze, 1, 1);
-
-
-    int maxstep = 200000;
 
 
     //MazeGeneratortest mazeGenerator = new MazeGeneratortest(Maze, sizex, sizey);
@@ -269,14 +224,9 @@ public static void main(String[] args) {
     Random random = new Random();
 
 
-    int algox = random.nextInt(sizex);
-    int algoy = random.nextInt(sizey);
 
-
-    int posx = random.nextInt(sizex); //player coordanates
-    int posy = random.nextInt(sizey);
-    int preposx = posx;
-    int preposy = posy;
+    posx = random.nextInt(sizex); //player coordanates
+    posy = random.nextInt(sizey);
 
     int enx = random.nextInt(sizex); //enemy coordinates
     int eny = random.nextInt(sizey);
@@ -317,10 +267,9 @@ public static void main(String[] args) {
 
     boolean finished = false;
     while (!finished) {
-        System.out.println("erst" + posx + " und " + posy);
-        System.out.println(PlMovement(maze, posx, posy, maxstep, preimput));
-        System.out.println("dann" + posx + " und " + posy);
-        //enemy movement
+
+        PlMovement(maze);
+
         //position setzen
         maze[enx][eny] = PATH; // empty prior "room"
 

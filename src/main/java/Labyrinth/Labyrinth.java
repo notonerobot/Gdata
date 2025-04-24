@@ -3,8 +3,8 @@ package Labyrinth;//TestTestTest
 import java.sql.SQLOutput;
 import java.util.*;
 public class Labyrinth {
-    public static final String GREEN_BACKGROUND = "\033[42m";
 
+    public static final String GREEN_BACKGROUND = "\033[42m";
     public static final String BLACK_BACKGROUND = "\033[40m";   // BLACK
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String BLACK_BOLD = "\033[1;30m";  // BLACK
@@ -12,17 +12,21 @@ public class Labyrinth {
     public static final String RED_BACKGROUND = "\u001B[41m";    // RED
 
     private static final Random random = new Random();
+    protected static String preimput;
+    protected static int posx;
+    protected static int posy;
+    protected static int enx;
+    protected static int eny;
+
     private static final int sizex = 11; //nur ungerade zahlen (opt31)
     private static final int sizey = 11; //nur ungerade zahlen (opt61)
+    private static final Point start = new Point(posy, posx, null);
+    private static final Point finish = new Point(eny, enx, null);
     private static final String WALL = BLACK_BACKGROUND + "   " + ANSI_RESET;
     private static final String PATH = GREEN_BACKGROUND + "   " + ANSI_RESET;
     private static String avatar = GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + "LoM" + ANSI_RESET;
-    public static String preimput;
-    public static int posx;
-    public static int posy;
-    public static int maxstep = 20;
-    Point start = new Point(2, 2, null);
-    Point finish = new Point(4, 3, null);
+
+    protected static int maxstep = 20;
 
     static class Point {
 
@@ -95,6 +99,51 @@ public class Labyrinth {
                 generateMaze(maze, nx, ny);
             }
         }
+    }
+
+
+    private static List<Point> constructPath(Point finish) {
+        List<Point> path = new ArrayList<>();
+        for (Point p = finish; p != null; p = p.parent) {
+            path.add(p);
+        }
+        Collections.reverse(path);
+        return path;
+    }
+
+    private static boolean isValidMove(String[][] grid, int x, int y, boolean[][] visited) {
+        return x >= 0 && y >= 0 && x < grid.length && y < grid[0].length &&
+                !grid[x][y].equals("#") && !visited[x][y];
+    }
+
+    public static List<Point> findPath(String[][] grid) {
+        int rows = grid.length;
+        int cols = grid[0].length;
+        boolean[][] visited = new boolean[rows][cols];
+        Queue<Point> queue = new LinkedList<>();
+        queue.add(start);
+        visited[start.x][start.y] = true;
+
+        int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+
+        while (!queue.isEmpty()) {
+            Point current = queue.poll();
+
+            if (current.x == finish.x && current.y == finish.y) {
+                return constructPath(current);
+            }
+
+            for (int[] direction : directions) {
+                int newX = current.x + direction[0];
+                int newY = current.y + direction[1];
+
+                if (isValidMove(grid, newX, newY, visited)) {
+                    queue.add(new Point(newX, newY, current));
+                    visited[newX][newY] = true;
+                }
+            }
+        }
+        return null;
     }
 
     public static void PlMovement(String[][] maze){
@@ -216,6 +265,7 @@ public static void main(String[] args) {
     generateMaze(maze, 1, 1);
 
 
+
     //MazeGeneratortest mazeGenerator = new MazeGeneratortest(Maze, sizex, sizey);
     String exit = GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + " []" + ANSI_RESET;
     String enemy = RED_BACKGROUND + BLACK_BOLD + "x-x" + ANSI_RESET;
@@ -228,8 +278,8 @@ public static void main(String[] args) {
     posx = random.nextInt(sizex); //player coordanates
     posy = random.nextInt(sizey);
 
-    int enx = random.nextInt(sizex); //enemy coordinates
-    int eny = random.nextInt(sizey);
+    enx = random.nextInt(sizex); //enemy coordinates
+    eny = random.nextInt(sizey);
 
     int exx = random.nextInt(sizex); // exit coordinates
     int exy = random.nextInt(sizey);
@@ -269,7 +319,9 @@ public static void main(String[] args) {
     while (!finished) {
 
         PlMovement(maze);
-
+///
+        findPath(maze);
+///
         //position setzen
         maze[enx][eny] = PATH; // empty prior "room"
 

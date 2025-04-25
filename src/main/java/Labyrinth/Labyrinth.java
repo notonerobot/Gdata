@@ -2,6 +2,7 @@ package Labyrinth;//TestTestTest
 
 import java.sql.SQLOutput;
 import java.util.*;
+
 public class Labyrinth {
 
     public static final String GREEN_BACKGROUND = "\033[42m";
@@ -97,8 +98,13 @@ public class Labyrinth {
             this.x = x;
             this.y = y;
             this.parent = parent;
+
         }
 
+        @Override
+        public String toString() {
+            return  x + "|" + y ;
+        }
 
     }
 
@@ -146,7 +152,7 @@ public class Labyrinth {
         return null;
     }
 
-    public static void PlMovement(String[][] maze){
+    public static void PlMovement(String[][] maze) {
         Scanner scanner = new Scanner(System.in);
 
         //Bewegen
@@ -254,143 +260,141 @@ public class Labyrinth {
                     }
             }
         }
-        maze[posx][posy]=avatar;
+        maze[posx][posy] = avatar;
     }
 
 
-public static void main(String[] args) {
+    public static void main(String[] args) {
 
-    String[][] maze = new String[sizex][sizey];
-    initializeMaze(maze);
-    generateMaze(maze, 1, 1);
-
-
-
-    //MazeGeneratortest mazeGenerator = new MazeGeneratortest(Maze, sizex, sizey);
-    String exit = GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + " []" + ANSI_RESET;
-    String enemy = RED_BACKGROUND + BLACK_BOLD + "x-x" + ANSI_RESET;
-    String preimput = null;
-    //new MazeGenerator(sizex,sizey);
-    Random random = new Random();
+        String[][] maze = new String[sizex][sizey];
+        initializeMaze(maze);
+        generateMaze(maze, 1, 1);
 
 
+        //MazeGeneratortest mazeGenerator = new MazeGeneratortest(Maze, sizex, sizey);
+        String exit = GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + " []" + ANSI_RESET;
+        String enemy = RED_BACKGROUND + BLACK_BOLD + "x-x" + ANSI_RESET;
+        String preimput = null;
+        //new MazeGenerator(sizex,sizey);
+        Random random = new Random();
 
-    posx = random.nextInt(sizex); //player coordanates
-    posy = random.nextInt(sizey);
 
-    enx = random.nextInt(sizex); //enemy coordinates
-    eny = random.nextInt(sizey);
-
-    int exx = random.nextInt(sizex); // exit coordinates
-    int exy = random.nextInt(sizey);
-
-    while (maze[posx][posy] == WALL) {
-        posx = random.nextInt(sizex);
+        posx = random.nextInt(sizex); //player coordanates
         posy = random.nextInt(sizey);
-    } // Player in wall reset
-    while (maze[exx][exy] == WALL) {
-        System.out.println("invalid positoned");
-        exx = random.nextInt(sizex);
-        exy = random.nextInt(sizey);
-    } //exit in wall reset
-    while (maze[enx][eny] == WALL) {
-        enx = random.nextInt(sizex);
+
+        enx = random.nextInt(sizex); //enemy coordinates
         eny = random.nextInt(sizey);
-    } // enemy in wall reset
-    while (exx == posx && exy == posy) {
-        exx = random.nextInt(sizex);
-        exy = random.nextInt(sizey);
-    } // exit and player same position reset
+
+        int exx = random.nextInt(sizex); // exit coordinates
+        int exy = random.nextInt(sizey);
+
+        while (maze[posx][posy] == WALL) {
+            posx = random.nextInt(sizex);
+            posy = random.nextInt(sizey);
+        } // Player in wall reset
+        while (maze[exx][exy] == WALL) {
+            System.out.println("invalid positoned");
+            exx = random.nextInt(sizex);
+            exy = random.nextInt(sizey);
+        } //exit in wall reset
+        while (maze[enx][eny] == WALL) {
+            enx = random.nextInt(sizex);
+            eny = random.nextInt(sizey);
+        } // enemy in wall reset
+        while (exx == posx && exy == posy) {
+            exx = random.nextInt(sizex);
+            exy = random.nextInt(sizey);
+        } // exit and player same position reset
 
 
-    maze[enx][eny] = enemy; //place enemy
-    maze[posx][posy] = avatar; //place player
-    maze[exx][exy] = exit; //place exit
+        maze[enx][eny] = enemy; //place enemy
+        maze[posx][posy] = avatar; //place player
+        maze[exx][exy] = exit; //place exit
 
 
-    for (int i = 0; i < sizex; i++) {
-        for (int j = 0; j < sizey; j++)
-            System.out.print(maze[i][j]);
-        System.out.println();
-    }
-
-
-    boolean finished = false;
-    while (!finished) {
-
-        PlMovement(maze);
-///
-        findPath(maze);
-        constructPath(finish);
-///
-        //position setzen
-        maze[enx][eny] = PATH; // empty prior "room"
-
-
-        int enmove;
-        boolean works = false;
-        if (posx > enx) { //spieler unter Gegner
-            enmove = 2;
-        } else if (posx < enx) { //spieler über Gegner
-            enmove = 0;
-        } else if (posy > eny) { //spieler likns von gegner
-            enmove = 3;
-        } else if (posy < eny) { //spieler rechts von gegner
-            enmove = 1;
-        } else {
-            enmove = random.nextInt(4);
+        for (int i = 0; i < sizex; i++) {
+            for (int j = 0; j < sizey; j++)
+                System.out.print(maze[i][j]);
+            System.out.println();
         }
 
-        while (!works) {
-            switch (enmove) {
-                case 0 -> enx--;
-                case 1 -> eny--;
-                case 2 -> enx++;
-                case 3 -> eny++;
-                default -> System.out.println("Mein fehler enemy");
+
+        boolean finished = false;
+        while (!finished) {
+
+            PlMovement(maze);
+///
+            System.out.println(findPath(maze));
+            constructPath(finish);
+///
+            //position setzen
+            maze[enx][eny] = PATH; // empty prior "room"
+
+
+            int enmove;
+            boolean works = false;
+            if (posx > enx) { //spieler unter Gegner
+                enmove = 2;
+            } else if (posx < enx) { //spieler über Gegner
+                enmove = 0;
+            } else if (posy > eny) { //spieler likns von gegner
+                enmove = 3;
+            } else if (posy < eny) { //spieler rechts von gegner
+                enmove = 1;
+            } else {
+                enmove = random.nextInt(4);
             }
 
-            if (maze[enx][eny] == WALL) {
-                System.out.println("das ne' wand enemy");
+            while (!works) {
                 switch (enmove) {
-                    case 0 -> enx++;
-                    case 1 -> eny++;
-                    case 2 -> enx--;
-                    case 3 -> eny--;
+                    case 0 -> enx--;
+                    case 1 -> eny--;
+                    case 2 -> enx++;
+                    case 3 -> eny++;
                     default -> System.out.println("Mein fehler enemy");
                 }
-                enmove = random.nextInt(4);
-            } else {
-                works = true;
+
+                if (maze[enx][eny] == WALL) {
+                    System.out.println("das ne' wand enemy");
+                    switch (enmove) {
+                        case 0 -> enx++;
+                        case 1 -> eny++;
+                        case 2 -> enx--;
+                        case 3 -> eny--;
+                        default -> System.out.println("Mein fehler enemy");
+                    }
+                    enmove = random.nextInt(4);
+                } else {
+                    works = true;
+                }
             }
-        }
-        maze[enx][eny] = enemy;
+            maze[enx][eny] = enemy;
 
-        //spielfeld ausgeben
+            //spielfeld ausgeben
 
-        if (maze[exx][exy] != maze[posx][posy]) {
-            // Printing the Array
+            if (maze[exx][exy] != maze[posx][posy]) {
+                // Printing the Array
 
-            printMaze(maze);
-            //mazeGenerator.printMaze();
-            System.out.println(maxstep);
-        } else {
-            finished = true;
-            // Printing the Array a last time
+                printMaze(maze);
+                //mazeGenerator.printMaze();
+                System.out.println(maxstep);
+            } else {
+                finished = true;
+                // Printing the Array a last time
 
-            avatar = GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + "[v] " + ANSI_RESET;
-            printMaze(maze);
-            //ymazeGenerator.printMaze();
-            System.out.println("Game Won!");
-        }
-        System.out.println(maze[posx][posy]);
-        if (maxstep == 0 || maze[posx][posy] == maze[enx][eny]) {
-            finished = true;
-            if (maze[exx][exy] != avatar) {
-                System.out.println("Game Over");
+                avatar = GREEN_BACKGROUND_BRIGHT + BLACK_BOLD + "[v] " + ANSI_RESET;
+                printMaze(maze);
+                //ymazeGenerator.printMaze();
+                System.out.println("Game Won!");
+            }
+            System.out.println(maze[posx][posy]);
+            if (maxstep == 0 || maze[posx][posy] == maze[enx][eny]) {
+                finished = true;
+                if (maze[exx][exy] != avatar) {
+                    System.out.println("Game Over");
+                }
             }
         }
     }
-}
 
 }

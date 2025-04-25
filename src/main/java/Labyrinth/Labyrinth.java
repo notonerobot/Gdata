@@ -28,20 +28,6 @@ public class Labyrinth {
 
     protected static int maxstep = 20;
 
-    static class Point {
-
-        int x, y;
-        Point parent;
-
-        Point(int x, int y, Point parent) {
-            this.x = x;
-            this.y = y;
-            this.parent = parent;
-        }
-
-
-    }
-
     private static boolean isValidMove(String[][] maze, int x, int y) {
         return x > 0 && x < sizex - 1 && y > 0 && y < sizey - 1 && maze[x][y].equals(WALL);
     }
@@ -101,6 +87,20 @@ public class Labyrinth {
         }
     }
 
+
+    static class Point {
+
+        int x, y;
+        Point parent;
+
+        Point(int x, int y, Point parent) {
+            this.x = x;
+            this.y = y;
+            this.parent = parent;
+        }
+
+
+    }
 
     private static List<Point> constructPath(Point finish) {
         List<Point> path = new ArrayList<>();
@@ -321,6 +321,7 @@ public static void main(String[] args) {
         PlMovement(maze);
 ///
         findPath(maze);
+        constructPath(finish);
 ///
         //position setzen
         maze[enx][eny] = PATH; // empty prior "room"
